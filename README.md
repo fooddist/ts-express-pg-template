@@ -71,6 +71,7 @@ cp .env.example .env.local
 ### Postgres configuration
 
 - `DB_CONNECTION_STRING`: Postgres connection string including database name, user and password if any
+- `DB_FORCE_SYNC`: force re-sync of all tables (this will drop all the tables!)
 - `DB_DEBUG_LOGGING`: allows to log all database transactions
 
 ### External services configuration
