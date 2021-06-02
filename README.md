@@ -26,8 +26,8 @@ cp .env.example .env.local
 - `lib`: service-wide utility functions and types
 - `logger`: logging component
 - `redis`:
-  * cache: Redis cache handlers (volatile data with LRU eviction strategy)
-  * store: Redis store handlers (non-volatile data)
+  * `cache`: Redis cache handlers (volatile data with LRU eviction strategy)
+  * `store`: Redis store handlers (non-volatile data)
 - `routes`: endpoint controllers
 - `server`: server configuration and boot function
 - `.dockerignore`: Docker ignore file (same as `.gitignore`)
