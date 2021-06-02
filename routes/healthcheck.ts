@@ -4,6 +4,7 @@ import { HealthStatus } from '../lib/types';
 import logger from '../logger';
 import { redisStoreHealthCheck } from '../redis/store/check';
 import { redisCacheHealthCheck } from '../redis/cache/check';
+import dbHealthCheck from '../db/check';
 
 interface HealthCheckResponse {
   server: HealthStatus;
@@ -17,6 +18,7 @@ const healthcheck = (server: Server): void => {
       server: server.address() !== null ? 'OK' : 'ERROR' as HealthStatus,
       store: await redisStoreHealthCheck(),
       cache: await redisCacheHealthCheck(),
+      db: await dbHealthCheck(),
     };
     return checks;
   };

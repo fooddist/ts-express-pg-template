@@ -1,6 +1,6 @@
-# ts-express-redis-template
+# ts-express-pg-template
 
-Template for the Express server with Redis integration written in TypeScript
+Template for the Express server with Redis and Postgres integrations written in TypeScript
 
 ## Usage
 
@@ -20,6 +20,7 @@ cp .env.example .env.local
 - `__tests__`: contains service tests
 - `.husky`: git hooks
 - `.root`: root user credentials (git ignored)
+- `db`: database directory where all models are stored
 - `dist`: JavaScript build (git ignored)
 - `ext`: component that manages communication with external services
 - `lib`: service-wide utility functions and types
@@ -66,6 +67,11 @@ cp .env.example .env.local
 - `REDIS_STORE_PREFIX`: key prefix to be used by the store
 - `REDIS_CACHE_CONNECTION_URL`: connection string for Redis cache (volatile)
 - `REDIS_CACHE_PREFIX`: key prefix to be used by the cache
+
+### Postgres configuration
+
+- `DB_CONNECTION_STRING`: Postgres connection string including database name, user and password if any
+- `DB_DEBUG_LOGGING`: allows to log all database transactions
 
 ### External services configuration
 
