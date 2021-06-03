@@ -10,3 +10,5 @@ export const adminOnly = scopeOnly(ApiScope.admin);
 export const adminOrHigher = scopeOrHigher(ApiScope.admin);
 
 export const serviceOnly = scopeOnly(ApiScope.service);
+
+export const serviceOrHigher = scopeOrHigher(ApiScope.service);
