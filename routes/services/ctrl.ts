@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { pick } from 'lodash';
+import { validate } from 'validate.js';
 import { ApiScope } from '../../lib/types';
 import { generateKey } from '../../lib/uuid';
+import validators from '../../lib/validators';
 import logger from '../../logger';
 import {
   addService,
@@ -24,7 +26,9 @@ export const getServicesCtrl = async (req: Request, res: Response): Promise<void
   const { issuer } = res.locals;
   if (!issuer) return forbidden(res);
 
-  const scope = req.query.scope as ApiScope || issuer.scope;
+  const scope = req.query.scope?.toString().toLowerCase() as ApiScope || issuer.scope;
+  const validationResult = validate({ scope }, { scope: validators.scope() });
+  if (validationResult) return badRequest(res, validationResult);
   if (!checkScope(scope, issuer.scope)) return forbidden(res, `Cannot query ${scope} scope. Remove scope query or use ${issuer.scope} scope or below.`);
 
   try {
@@ -41,6 +45,14 @@ export const getServicesCtrl = async (req: Request, res: Response): Promise<void
 export const postServiceCtrl = async (req: Request, res: Response): Promise<void> => {
   const { issuer } = res.locals;
   if (!issuer) return forbidden(res);
+
+  const constraints = {
+    spid: validators.id(),
+    scope: validators.scope({ optional: true }),
+    label: validators.name({ optional: true }),
+  };
+  const validationResult = validate(req.body, constraints);
+  if (validationResult) return badRequest(res, validationResult);
 
   const { spid, scope = ApiScope.service, label = spid } = req.body;
   if (!spid) return badRequest(res, 'Required param spid hasn\'t been provided');
@@ -74,6 +86,8 @@ export const getServiceBySpidCtrl = async (
 
   const { spid } = req.params;
   if (!spid) return badRequest(res, 'Required param spid hasn\'t been provided');
+  const validationResult = validate({ spid }, { spid: validators.id() });
+  if (validationResult) return badRequest(res, validationResult);
 
   try {
     const service = await getServiceBySpid(spid);
@@ -97,6 +111,15 @@ export const putServiceBySpidCtrl = async (
 
   const { spid } = req.params;
   if (!spid) return badRequest(res, 'Required param spid hasn\'t been provided');
+  const paramValidationResult = validate({ spid }, { spid: validators.id() });
+  if (paramValidationResult) return badRequest(res, paramValidationResult);
+
+  const constraints = {
+    scope: validators.scope({ optional: true }),
+    label: validators.name({ optional: true }),
+  };
+  const bodyValidationResult = validate(req.body, constraints);
+  if (bodyValidationResult) return badRequest(res, bodyValidationResult);
 
   try {
     const service = await getServiceBySpid(spid);
@@ -104,7 +127,7 @@ export const putServiceBySpidCtrl = async (
     if ('error' in service) throw new Error(service.error);
     if (!checkScope(service.scope, issuer.scope)) return forbidden(res);
 
-    const updatedService = { ...service, ...pick(req.body, ['label', 'key', 'scope']) };
+    const updatedService = { ...service, ...pick(req.body, ['label', 'scope']) };
     const result = await updateService(updatedService);
     if ('error' in result) throw new Error(result.error);
     res.status(200).json(result);
@@ -123,6 +146,8 @@ export const deleteServiceBySpidCtrl = async (
 
   const { spid } = req.params;
   if (!spid) return badRequest(res, 'Required param spid hasn\'t been provided');
+  const paramValidationResult = validate({ spid }, { spid: validators.id() });
+  if (paramValidationResult) return badRequest(res, paramValidationResult);
 
   try {
     const service = await getServiceBySpid(spid);

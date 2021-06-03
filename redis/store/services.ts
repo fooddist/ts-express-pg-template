@@ -24,7 +24,7 @@ const isServiceNode = (node: any): node is ServiceNode => (
 
 type AuthErrorResponse = { error: string };
 
-const API_SCOPES = {
+export const API_SCOPES = {
   [ApiScope.root]: 1,
   [ApiScope.admin]: 2,
   [ApiScope.service]: 3,
